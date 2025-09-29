@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  weather-alert-system:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/weather_alert_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - MAILGUN_API_KEY=${MAILGUN_API_KEY}
+      - MAILGUN_DOMAIN=${MAILGUN_DOMAIN}
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - weather-network
+
+  mongodb:
+    image: mongo:7.0
+    container_name: weather-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=weather_alert_db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - weather-network
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: weather-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - weather-network
+
+volumes:
+  mongodb_data:
+  redis_data:
+
+networks:
+  weather-network:
+    driver: bridge
