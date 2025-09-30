@@ -6,9 +6,9 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/weather_alert_db
+      - MONGO_URI=mongodb://weatheruser:weatherpass@mongodb:27017/weather_alert_db?authSource=weather_alert_db
       - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redis123
       - WEATHER_API_KEY=${WEATHER_API_KEY}
       - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
       - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
@@ -24,20 +24,26 @@ services:
   mongodb:
     image: mongo:7.0
     container_name: weather-mongodb
+    restart: unless-stopped
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_DATABASE=weather_alert_db
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: weather_alert_db
     volumes:
       - mongodb_data:/data/db
+      - ./scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     networks:
       - weather-network
 
   redis:
-    image: redis:7.2-alpine
+    image: redis:7-alpine
     container_name: weather-redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    command: redis-server --requirepass redis123
     volumes:
       - redis_data:/data
     networks:

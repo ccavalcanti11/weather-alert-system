@@ -8,6 +8,10 @@ group = 'com.weather.alert'
 version = '0.0.1-SNAPSHOT'
 description = 'Real-time weather alert notification system'
 
+ext {
+	mapstructVersion = '1.6.0'
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
@@ -33,6 +37,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+	// MapStruct
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
 	// External API clients
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -61,6 +69,9 @@ dependencies {
 		exclude group: 'commons-logging', module: 'commons-logging'
 	}
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// MapStruct for tests
+	testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 }
 
 tasks.named('test') {
